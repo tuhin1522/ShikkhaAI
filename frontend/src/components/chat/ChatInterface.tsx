@@ -32,10 +32,10 @@ interface ChatInterfaceProps {
 }
 
 const SUGGESTED_QUESTIONS = [
-  "Explain the pathophysiology of type 2 diabetes mellitus.",
-  "What are the causes, features, and management of pulmonary embolism?",
-  "Describe the investigation and treatment of community-acquired pneumonia.",
-  "Give a high-yield summary of acute myocardial infarction for exams.",
+  "৮ম শ্রেণির বিজ্ঞান অধ্যায় থেকে বিষয়ভিত্তিক MCQ তৈরি করে উত্তর দাও।",
+  "১০ম শ্রেণির গণিতের অধ্যায়ের মূল ধারণাগুলো ধাপে ধাপে ব্যাখ্যা করো।",
+  "৯ম শ্রেণির ইতিহাস থেকে পরীক্ষার উপযোগী সংক্ষিপ্ত প্রশ্ন ও উত্তর তৈরি করো।",
+  "বাংলা ব্যাকরণের একটি অধ্যায় থেকে সারসংক্ষেপ ও গুরুত্বপূর্ণ MCQ দাও।",
 ];
 
 export const ChatInterface: React.FC<ChatInterfaceProps> = ({
@@ -152,7 +152,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
                   How can I help you today?
                 </h1>
                 <p className="text-muted-foreground/80 max-w-lg text-[16px] leading-relaxed mb-10">
-                  I'm <strong>ShikkhaAI</strong> — your AI academic tutor for medical students. Ask me anything: pathophysiology, clinical features, pharmacology, mnemonics, or exam-ready summaries.
+                  I'm <strong>ShikkhaAI</strong> — Your AI academic tutor for Bangla students. Ask me anything: topic-wise MCQs, question answers, concept explanations, or exam-ready summaries.
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-2xl w-full">
@@ -269,7 +269,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
             </div>
           </div>
           <p className="text-[11px] text-center text-muted-foreground/50 font-medium tracking-tight">
-            For educational use only. Not a substitute for clinical judgment. Always refer to current guidelines in real patient care.
+            For educational purposes only. This content is not a replacement for professional judgment. Always consult up-to-date guidelines in real clinical practice.
           </p>
         </div>
       </div>
