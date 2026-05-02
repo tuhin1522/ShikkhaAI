@@ -35,7 +35,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             jwtDecode(token);
             // We might want to fetch full user details from backend here
             // For now, let's just use what we have or fetch /users/me
-            fetchUser(token);
+            fetchUser();
         } catch (error) {
             logoutSync();
             
@@ -45,7 +45,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   }, [token]);
 
-  const fetchUser = async (authToken: string) => {
+  const fetchUser = async () => {
     try {
       const userData = await api.getCurrentUser();
       setUser(userData);
