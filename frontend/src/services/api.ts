@@ -1,0 +1,154 @@
+const API_URL = "http://localhost:8000";
+const getAuthHeaders = (): Record<string, string> => {
+    const token = localStorage.getItem("token");
+    return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
+export interface Message {
+  id?: number;
+  role: "user" | "assistant";
+  content: string;
+  query_type?: string;
+  elapsed_time?: number;
+  docs_retrieved?: number;
+}
+
+export interface Conversation {
+  id: number;
+  title: string;
+  created_at: string;
+}
+
+export const api = {
+    async register(email: string, password: string, full_name: string) {
+        const response = await fetch(`${API_URL}/auth/register`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password, full_name }),
+        });
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.detail || "Registration failed");
+        }
+        return response.json();
+    },
+
+    async login(email: string, password: string) {
+        const formData = new FormData();
+        formData.append("username", email);
+        formData.append("password", password);
+
+        const response = await fetch(`${API_URL}/auth/login`, {
+            method: "POST",
+            body: formData,
+        });
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.detail || "Login failed");
+        }
+        return response.json();
+    },
+
+    async getCurrentUser() {
+        const response = await fetch(`${API_URL}/auth/me`, {
+            headers: getAuthHeaders(),
+        });
+        if (!response.ok) {
+            throw new Error("Failed to fetch user");
+        }
+        return response.json();
+    },
+
+    async logout() {
+        try {
+            await fetch(`${API_URL}/auth/logout`, {
+                method: "POST",
+                headers: getAuthHeaders(),
+            });
+        } catch (error) {
+            console.error("Logout failed:", error);
+        }
+    },
+
+    async forgotPassword(email: string) {
+        const response = await fetch(`${API_URL}/auth/forgot-password`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email }),
+        });
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.detail || "Failed to send password reset email");
+        }
+        return response.json();
+    },
+
+    async resetPassword(token: string, new_password: string) {
+        const response = await fetch(`${API_URL}/auth/reset-password`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token, new_password }),
+        });
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.detail || "Failed to reset password");
+        }
+        return response.json();
+    },
+
+    async verifyEmail(token: string) {
+        const response = await fetch(`${API_URL}/auth/verify/${token}`);
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.detail || "Failed to verify email");
+        }
+        return response.json();
+    },
+
+    async chat(message: string, conversation_id?: number, response_type: string = "elaborative") {
+        const response = await fetch(`${API_URL}/chat`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+            body: JSON.stringify({ message, conversation_id, response_type }),
+        });
+        if (!response.ok) {
+        if (response.status === 401) {
+            // Check if we need to redirect or handle it in component
+            localStorage.removeItem('token');
+            // window.location.href = '/login'; // Don't redirect, just clear token
+            throw new Error("Unauthorized");
+        }
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || `Failed to send message: ${response.status}`);
+        }
+        return response.json();
+    },
+
+    async getConversations(): Promise<Conversation[]> {
+        const response = await fetch(`${API_URL}/conversations`, {
+            headers: getAuthHeaders()
+        });
+        if (!response.ok) {
+            if (response.status === 401) return []; // Or throw to handle in UI
+            throw new Error("Failed to fetch conversations");
+        }
+        return response.json();
+    },
+
+    async getMessages(conversationId: number): Promise<Message[]> {
+        const response = await fetch(`${API_URL}/conversations/${conversationId}/messages`, {
+            headers: getAuthHeaders()
+        });
+        if (!response.ok) throw new Error("Failed to fetch messages");
+        return response.json();
+    },
+
+    async deleteConversation(conversationId: number) {
+        const response = await fetch(`${API_URL}/conversations/${conversationId}`, {
+        method: "DELETE",
+        headers: getAuthHeaders()
+        });
+        if (!response.ok) throw new Error("Failed to delete conversation");
+        return response.json();
+    },
+}
